@@ -17,12 +17,14 @@ class ProcessTheClient(asyncore.dispatcher_with_send):
 			rcv = rcv + d
 			if rcv[-2:] == '\r\n':
 				# end of command, proses string
-				logging.warning("data dari client: {}".format(rcv))
+				#logging.warning("data dari client: {}".format(rcv))
 				hasil = httpserver.proses(rcv)
 				#hasil sudah dalam bentuk bytes
 				hasil = hasil + "\r\n\r\n".encode()
 				#agar bisa dioperasikan dengan string \r\n\r\n maka harus diencode dulu => bytes
-				logging.warning("balas ke  client: {}".format(hasil))
+
+				#nyalakan ketika proses debugging saja, jika sudah berjalan, matikan
+				#logging.warning("balas ke  client: {}".format(hasil))
 				self.send(hasil) #hasil sudah dalam bentuk bytes, kirimkan balik ke client
 				rcv = ""
 				self.close()
@@ -37,14 +39,14 @@ class Server(asyncore.dispatcher):
 		self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.set_reuse_addr()
 		self.bind(('',portnumber))
-		self.listen(1)
-		logging.warning("running on port {}" . format(portnumber))
+		self.listen(5)
+		# logging.warning("running on port {}" . format(portnumber))
 
 	def handle_accept(self):
 		pair = self.accept()
 		if pair is not None:
 			sock, addr = pair
-			logging.warning("connection from {}" . format(repr(addr)))
+			# logging.warning("connection from {}" . format(repr(addr)))
 			handler = ProcessTheClient(sock)
 
 def main():
@@ -58,3 +60,4 @@ def main():
 
 if __name__=="__main__":
 	main()
+
